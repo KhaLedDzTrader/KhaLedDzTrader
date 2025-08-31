@@ -20,21 +20,23 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y python3-pip python3-setuptools python3-wheel
-          sudo apt install -y build-essential libffi-dev libssl-dev
-          sudo apt install -y libltdl-dev libjpeg-dev libfreetype6-dev
-          sudo apt install -y libgl1-mesa-dev libgles2-mesa-dev
-          sudo apt install -y unzip openjdk-17-jdk zlib1g-dev
+          sudo apt install -y build-essential libffi-dev libssl-dev \
+            libltdl-dev libjpeg-dev libfreetype6-dev libgl1-mesa-dev \
+            libgles2-mesa-dev unzip openjdk-17-jdk zlib1g-dev
           python -m pip install --upgrade pip
           pip install kivy buildozer cython requests beautifulsoup4
 
       - name: Initialize Buildozer
         run: |
           cd project
-          buildozer init || true
+          if [ ! -f buildozer.spec ]; then
+            buildozer init
+          fi
 
       - name: Build APK
         run: |
           cd project
+          export PATH=$PATH:~/.buildozer/android/platform/android-sdk/platform-tools
           buildozer -v android debug
 
       - name: Upload APK
